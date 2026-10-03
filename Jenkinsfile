@@ -42,30 +42,24 @@ pipeline {
 
         stage('Déploiement MySQL') {
             steps {
-                bat '''
-                    docker stop mysql 2>NUL || exit 0
-                    docker rm mysql 2>NUL || exit 0
-                    docker run -d --name mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=timesheet -p 3306:3306 mysql:8.0
-                '''
+                bat 'docker stop mysql 2>NUL || ver >NUL'
+                bat 'docker rm mysql 2>NUL || ver >NUL'
+                bat 'docker run -d --name mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=timesheet -p 3306:3306 mysql:8.0'
             }
         }
 
         stage('Déploiement backend-app') {
             steps {
-                bat '''
-                    docker stop backend-app 2>NUL || exit 0
-                    docker rm backend-app 2>NUL || exit 0
-                    docker run -d --name backend-app -p 8082:8080 --link mysql:mysql %DOCKER_USER%/%IMAGE_NAME%:%IMAGE_TAG%
-                '''
+                bat 'docker stop backend-app 2>NUL || ver >NUL'
+                bat 'docker rm backend-app 2>NUL || ver >NUL'
+                bat "docker run -d --name backend-app -p 8082:8080 --link mysql:mysql %DOCKER_USER%/${IMAGE_NAME}:${IMAGE_TAG}"
             }
         }
 
         stage('Vérification avec logs') {
             steps {
-                bat '''
-                    docker ps
-                    docker logs backend-app
-                '''
+                bat 'docker ps'
+                bat 'docker logs backend-app'
             }
         }
     }
